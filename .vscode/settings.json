@@ -2,11 +2,11 @@
     "python.pipenvPath": "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz",
     "python.envFile": "${workspaceFolder}/.env",
     "python.pythonPath": "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz/bin/python",
+    "python.analysis.autoSearchPaths": false,
     "python.autoComplete.extraPaths": [
         "${workspaceFolder}",
         "${workspaceFolder}/tests",
-        "${workspaceFolder}/src",
-        "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz/bin/",
+        "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz/bin",
     ],
     "python.formatting.autopep8Path": "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz/bin/autopep8",
     "python.languageServer": "Microsoft",
@@ -18,15 +18,15 @@
     "python.linting.pylintEnabled": true,
     "python.linting.pylintUseMinimalCheckers": false,
     "python.linting.pylintArgs": [
-        "--load-plugins",
-        "pylint-flask-sqlalchemy"
+        "--load-plugin",
     ],
-    "python.testing.pytestEnabled": true,
+    "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
     "python.testing.pytestArgs": [
         "tests"
     ],
-    "python.testing.autoTestDiscoverOnSaveEnabled": true,
-    "python.testing.pytestPath": "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz/bin/pytest"
+    "python.testing.autoTestDiscoverOnSaveEnabled": false,
+    "python.testing.pytestPath": "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz/bin/pytest",
+    "python.testing.promptToConfigure": false
 }
