@@ -9,6 +9,7 @@ requests = "*"
 fmpsdk = "*"
 python-dotenv = "*"
 numpy = "*"
+openpyxl = "*"
 
 [dev-packages]
 pylint = "*"
