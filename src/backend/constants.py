@@ -22,13 +22,14 @@ INCOMESTATEMENT = 'incomestatement_{}'
 BALANCESHEET = 'balancesheet_{}'
 RATIOS = 'ratios_{}'
 KEYMETRICS = 'keymetrics_{}'
-COMPANYPROFILE = 'companyprofile_{}'
+COMPANYPROFILE = 'profile'
 INSIDERTRADING = 'insider'
 SEC = 'SEC'
 
 # Periods
 ANNUAL = 'annual'
 QUARTER = 'quarter'
+REPORT = 'report'
 
 # Other
 NOTES = "Notes"
@@ -39,7 +40,7 @@ JSON = {}
 CORE_PARAMS = [
     ('Date', 'date', 'NA'),
     ('MC', 'marketCap', 'keymetrics'),
-    ('R', 'revenue', 'incomestatement'),
+    ('Revenue', 'revenue', 'incomestatement'),
     ('DE', 'debtToEquity', 'keymetrics'),
     ('RoA', 'returnOnAssets', 'ratios'),
     ('FCF', 'freeCashFlow', 'cashflow'),
@@ -62,6 +63,7 @@ CORE_PARAMS = [
 PROFILE_PARAMS = [
     ('Symbol', 'symbol'),
     ('Price', 'price'),
+    ('Market Cap', 'mktCap'),
     ('Beta', 'beta'),
     ('Description', 'description'),
     ('Company Name', 'companyName'),
@@ -74,6 +76,7 @@ CALENDAR_PARAMS = [
     ('EPS est', 'epsEstimated'),
     ('Revenue est', 'revenueEstimated'),
 ]
+
 
 
 #   Style

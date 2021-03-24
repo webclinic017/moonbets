@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from openpyxl import Workbook, load_workbook, worksheet
@@ -9,18 +10,17 @@ from src.backend import data_calls as dc
 from src.backend import data
 
 
-
 #   returns an list of dictionaries
 def sorted_dated_data(data: dict,
                       ticker: str,
                       sheet_name: str,
                       field: list):
-    sorted_data = []
+    sorted_data = {}
     date = ''
     balance_sheet = data[ticker][sheet_name]
     for report_date in balance_sheet:
         date = report_date['date']
-        sorted_data.append((date, report_date[field]))
+        sorted_data[date] = report_date[field]
     return sorted_data
 
 
@@ -34,22 +34,66 @@ def get_specific_value(data: dict,
 
 
 #   name should include ticker and date of earnings
-def create_workbook(name: str):
+def create_all_workbook(name: str):
     file_name = cnst.DATA_PATH + name + '.xlsx'
     wb = Workbook()
-    wb.create_sheet(cnst.ANNUAL)
-    wb.create_sheet(cnst.QUARTER)
+    wb.create_sheet(cnst.REPORT)
     wb.remove(wb['Sheet'])
     wb.save(file_name)
     wb.close()
 
 
+def create_workbook(name: str):
+    file_name = cnst.DATA_PATH + name + '.xlsx'
+    wb = Workbook()
+    wb.create_sheet(cnst.QUARTER)
+    wb.create_sheet(cnst.ANNUAL)
+    wb.remove(wb['Sheet'])
+    wb.save(file_name)
+    wb.close()
+
+
+def autofill_report_xl(data: dict, file_name: str):
+    path = cnst.DATA_PATH + file_name + '.xlsx'
+    wb = load_workbook(path)
+    ws = wb[file_name]
+    col_pos = 1
+    for col, param in enumerate(cnst.PROFILE_PARAMS):
+        if param[0] == 'Description':
+            break
+        ws.cell(column=col+1, row=1, value=param[0])
+        col_pos += 1
+    for param in cnst.CORE_PARAMS:
+        if param[0] == 'Date':
+            continue
+        ws.cell(column=col_pos, row=1, value=param[0])
+        col_pos += 1
+    for row, ticker in enumerate(data):
+        for col, param in enumerate(cnst.PROFILE_PARAMS):
+            col_pos = col + 1
+            if param[0] == 'Description':
+                break
+            field_val = data[ticker]['profile'][0][param[1]]
+            ws.cell(column=col_pos, row=row+2, value=field_val)
+        for col, param in enumerate(cnst.CORE_PARAMS):
+            if param[0] == 'Date':
+                continue
+            datasheet = param[2] + '_' + cnst.ANNUAL
+            field_val = data[ticker][datasheet][0][param[1]]
+            ws.cell(column=col_pos, row=row+2, value=field_val)
+            col_pos += 1
+    wb.save(path)
+    wb.close()
+
+
+#   fills xl file with data
 def autofill_xl(data: dict, ticker: str, file_name: str, period: str):
     path = cnst.DATA_PATH + file_name + '.xlsx'
     wb = load_workbook(path)
     ws = wb[period]
     row_pos = 1
     date_row = 0
+    date_list = {}
     for row, param in enumerate(cnst.PROFILE_PARAMS):
         param_val = get_specific_value(data, ticker, 'profile', param[1])
         ws.cell(column=1, row=row+1, value=param[0])
@@ -59,27 +103,41 @@ def autofill_xl(data: dict, ticker: str, file_name: str, period: str):
         current_row = row_pos + row
         if row == 0:
             date_row = current_row
-            ws.cell(column=row+1, row=current_row, value=param[0])
+            ws.cell(column=1, row=current_row, value=param[0])
+            datasheet = check_update_datasheet(data, ticker, period)
+            for col, date in enumerate(data[ticker][datasheet]):
+                ws.cell(column=col+2, row=current_row, value=date['date'])
+                date_list[date['date']] = (col+2, current_row)
             continue
         sheet_name = param[2] + '_' + period
         field = param[1]
         data_dates = sorted_dated_data(data, ticker, sheet_name, field)
-        if row == 1:
-            for col, date in enumerate(data_dates):
-                ws.cell(column=col+2, row=current_row-1, value=date[0])
-        for col, value in enumerate(data_dates):
-            if col == 0:
-                ws.cell(column=col+1, row=current_row, value=param[0])
-            data_date = ws.cell(row=date_row, column=col+2).internal_value
-            if data_date == value[0]:
-                ws.cell(column=col+2, row=current_row, value=value[1])
+        ws.cell(column=1, row=current_row, value=param[0])
+        for ref_date in date_list:
+            if ref_date in data_dates:
+                ws.cell(column=date_list[ref_date][0], row=current_row, value=data_dates[ref_date])
     wb.save(path)
     wb.close()
 
 
+def check_update_datasheet(data: dict, ticker: str, period: str):
+    most_recent_date = datetime.datetime.strptime('1950-12-01', "%Y-%m-%d")
+    most_recent_datasheet = ''
+    ticker_data = data[ticker]
+    for datasheet in ticker_data:
+        if period not in datasheet:
+            continue
+        temp = get_specific_value(data, ticker, datasheet, 'date')
+        new_time_date = datetime.datetime.strptime(temp, "%Y-%m-%d")
+        if most_recent_date < new_time_date:
+            most_recent_date = new_time_date
+            most_recent_datasheet = datasheet
+    return most_recent_datasheet
+
+
 def color_up(current_value: int, last_value: int):
     try:
-        avg = 100 * (current_value - last_value) / current_value
+        avg = 100 * (current_value - last_value) / abs(last_value)
         style = ''
         if avg >= 100:
             color = Color(rgb='24CA2F')
@@ -144,10 +202,22 @@ def prettypy(file_name: str, period: str):
     wb.close()
 
 
+def prettypy_report(file_name: str):
+    path = cnst.DATA_PATH + file_name + '.xlsx'
+    wb = load_workbook(path)
+    ws = wb[file_name]
+    columns_best_fit(ws)
+    for col in range(0, 30):
+        cell = ws[xlref(0, col)]
+        cell.font = cnst.STYLE_PARAM
+    for row in range(1, 100):
+        cell = ws[xlref(row, 0)]
+        cell.font = cnst.STYLE_PARAM
+    wb.save(path)
+    wb.close()
+
+
 def columns_best_fit(ws: worksheet.worksheet.Worksheet):
-    """
-    Make all columns best fit
-    """
     column_letters = tuple(get_column_letter(col_number + 1) for col_number in range(ws.max_column))
     for column_letter in column_letters:
         ws.column_dimensions[column_letter].bestFit = True
@@ -160,10 +230,23 @@ def xlref(row, column, zero_indexed=True):
     return get_column_letter(column) + str(row)
 
 
-def gen_xl(data):
+def gen_xl(data: dict, only_report=False):
+    if not only_report:
+        for stonk in data:
+            date = data[stonk]['calendar']['date']
+            file_name = date + '_' + stonk
+            create_workbook(file_name)
+            for period in [cnst.ANNUAL, cnst.QUARTER]:
+                autofill_xl(data, stonk, file_name, period)
+                prettypy(file_name, period)
+    create_all_workbook(cnst.REPORT)
+    autofill_report_xl(data, cnst.REPORT)
+    prettypy_report(cnst.REPORT)
+
+
+def gen_xl_single(data):
     for stonk in data:
-        date = data[stonk]['calendar']['date']
-        file_name = date + '_' + stonk
+        file_name = stonk
         create_workbook(file_name)
         for period in [cnst.ANNUAL, cnst.QUARTER]:
             autofill_xl(data, stonk, file_name, period)

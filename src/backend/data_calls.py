@@ -35,10 +35,15 @@ def cleaning_profiles(data: list):
             is_etf = temp_profile[0]['isEtf']
             is_active_trading = temp_profile[0]['isActivelyTrading']
             beta = temp_profile[0]['beta']
-            if not is_etf and is_active_trading and beta > 2:
+            if not is_etf and is_active_trading:
                 data_cleaned[stonk['symbol']] = {'profile': temp_profile,
                                                  'calendar': stonk}
+            time.sleep(0.05)
     return data_cleaned
+
+
+def singple_profile(ticker: str):
+    return ee.get_company_profile(ticker)
 
 
 #   get technical data data
@@ -57,6 +62,4 @@ def technicals(profiles):
             r = ee.get_ratios(stonk, period)
             all_data[stonk][cnst.RATIOS.format(period)] = r
             time.sleep(0.5)
-        sec = ee.sec_statements(stonk)
-        all_data[stonk][cnst.SEC] = sec
     return all_data
