@@ -5,6 +5,8 @@ import fmpsdk as api
 
 from src.backend.constants import SEC_URL, APIKEY
 
+
+
 #   Date should be in YYYY:MM:DD
 #   only three months maximum if range == given
 

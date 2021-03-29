@@ -25,20 +25,26 @@ def get_dates(business_days: int = 5, days_from_date: int = 0):
 #   clean data: if not etf and is active
 #   return data only with stocks profiled
 #   profiles with 2 or more of beta
-def cleaning_profiles(data: list):
+def cleaning_profiles(data: list, multi_profile: bool = True):
     data_cleaned = {}
     temp_profile, is_etf, is_active_trading = '', '', ''
     beta = int
-    for stonk in data:
+    for index, stonk in enumerate(data):
         temp_profile = ee.get_company_profile(stonk['symbol'])
         if temp_profile:
             is_etf = temp_profile[0]['isEtf']
             is_active_trading = temp_profile[0]['isActivelyTrading']
             beta = temp_profile[0]['beta']
-            if not is_etf and is_active_trading:
+            if multi_profile:
+                if not is_etf and is_active_trading and beta >= 1.5:
+                 data_cleaned[stonk['symbol']] = {'profile': temp_profile,
+                                                    'calendar': stonk}
+            else:
                 data_cleaned[stonk['symbol']] = {'profile': temp_profile,
-                                                 'calendar': stonk}
-            time.sleep(0.05)
+                                'calendar': stonk}
+        check = index % 10
+        if index == 0:
+            time.sleep(0.75)
     return data_cleaned
 
 

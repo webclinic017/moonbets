@@ -10,6 +10,7 @@ fmpsdk = "*"
 python-dotenv = "*"
 numpy = "*"
 openpyxl = "*"
+pyinquirer = "*"
 
 [dev-packages]
 pylint = "*"

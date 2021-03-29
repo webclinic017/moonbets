@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from openpyxl.styles import Font
+from openpyxl.styles import Font, Alignment
 
 # PATHS
 BASE_PATH = os.getcwd()
@@ -63,7 +63,7 @@ CORE_PARAMS = [
 PROFILE_PARAMS = [
     ('Symbol', 'symbol'),
     ('Price', 'price'),
-    ('Market Cap', 'mktCap'),
+    ('Current MC', 'mktCap'),
     ('Beta', 'beta'),
     ('Description', 'description'),
     ('Company Name', 'companyName'),
@@ -81,3 +81,4 @@ CALENDAR_PARAMS = [
 
 #   Style
 STYLE_PARAM = Font(bold=True, color='00000000')
+STYLE_ALIGN = Alignment(horizontal='left')

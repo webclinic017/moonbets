@@ -37,7 +37,7 @@ def get_specific_value(data: dict,
 def create_all_workbook(name: str):
     file_name = cnst.DATA_PATH + name + '.xlsx'
     wb = Workbook()
-    wb.create_sheet(cnst.REPORT)
+    wb.create_sheet(name)
     wb.remove(wb['Sheet'])
     wb.save(file_name)
     wb.close()
@@ -189,15 +189,23 @@ def prettypy(file_name: str, period: str):
         cell = ws[xlref(row, 0)]
         cell.font = cnst.STYLE_PARAM
     for col in range(1, 60):
-        cell = ws[xlref(7, col)]
+        cell = ws[xlref(8, col)]
         cell.font = cnst.STYLE_PARAM
     for row in range(8, 29):
+        param_cell = ws[xlref(row, 0)]
         for col in range(1, 60):
             current_cell = ws[xlref(row, col)]
             next_cell = ws[xlref(row, col+1)]
             style = color_up(current_cell.value, next_cell.value)
             if style:
                 current_cell.fill = style
+            if 'MC' == param_cell.value or 'Revenue' == param_cell.value or \
+                    'FCF' == param_cell.value or 'OCF' == param_cell.value or \
+                    'R&DE' ==param_cell.value:
+                current_cell.number_format = '0.00E+00'
+            else:
+                current_cell.number_format = '#0.000'
+            current_cell.alignment = cnst.STYLE_ALIGN
     wb.save(path)
     wb.close()
 
@@ -210,9 +218,21 @@ def prettypy_report(file_name: str):
     for col in range(0, 30):
         cell = ws[xlref(0, col)]
         cell.font = cnst.STYLE_PARAM
+        for row in range(1, 100):
+            cell_val = ws[xlref(row, col)]
+            if 'Current MC' == cell.value or 'MC' == cell.value or \
+                'Revenue' == cell.value or 'FCF' == cell.value or \
+                'OCF' == cell.value or 'R&DE' == cell.value:
+                if cell_val.value:
+                    cell_val.number_format = '0.00E+00'
+            else:
+                if cell_val.value:
+                    cell_val.number_format = '#0.000'
     for row in range(1, 100):
         cell = ws[xlref(row, 0)]
         cell.font = cnst.STYLE_PARAM
+        if not cell.value:
+            break
     wb.save(path)
     wb.close()
 
@@ -230,18 +250,18 @@ def xlref(row, column, zero_indexed=True):
     return get_column_letter(column) + str(row)
 
 
-def gen_xl(data: dict, only_report=False):
-    if not only_report:
-        for stonk in data:
-            date = data[stonk]['calendar']['date']
-            file_name = date + '_' + stonk
-            create_workbook(file_name)
-            for period in [cnst.ANNUAL, cnst.QUARTER]:
-                autofill_xl(data, stonk, file_name, period)
-                prettypy(file_name, period)
-    create_all_workbook(cnst.REPORT)
-    autofill_report_xl(data, cnst.REPORT)
-    prettypy_report(cnst.REPORT)
+def gen_xl(data: dict, name_postfix:str):
+    for stonk in data:
+        date = data[stonk]['calendar']['date']
+        file_name = date + '_' + stonk
+        create_workbook(file_name)
+        for period in [cnst.ANNUAL, cnst.QUARTER]:
+            autofill_xl(data, stonk, file_name, period)
+            prettypy(file_name, period)
+    report_name = cnst.REPORT + '_' + name_postfix
+    create_all_workbook(report_name)
+    autofill_report_xl(data, report_name)
+    prettypy_report(report_name)
 
 
 def gen_xl_single(data):
