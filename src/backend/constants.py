@@ -53,6 +53,7 @@ CORE_PARAMS = [
     ('EPS', 'eps', 'incomestatement'),
     ('R&DE', 'researchAndDevelopmentExpenses', 'incomestatement'),
     ('R&DER', 'researchAndDdevelopementToRevenue', 'keymetrics'),
+    ('EBITDA', 'ebitda', 'incomestatement'),
     ('EV/EBITDA', 'enterpriseValueOverEBITDA', 'keymetrics'),
     ('P/S', 'priceToSalesRatio', 'ratios'),
     ('P/E', 'priceEarningsRatio', 'ratios'),

@@ -7,7 +7,6 @@ from src.backend import spreadsheets as ss
 from src.backend import constants as cnst
 from src.backend import data_calls as dc
 from src.backend import data
-
 from src.backend import cli
 
 

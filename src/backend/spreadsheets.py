@@ -201,7 +201,7 @@ def prettypy(file_name: str, period: str):
                 current_cell.fill = style
             if 'MC' == param_cell.value or 'Revenue' == param_cell.value or \
                     'FCF' == param_cell.value or 'OCF' == param_cell.value or \
-                    'R&DE' ==param_cell.value:
+                    'R&DE' == param_cell.value or 'EBITDA' == param_cell.value:
                 current_cell.number_format = '0.00E+00'
             else:
                 current_cell.number_format = '#0.000'
@@ -222,7 +222,8 @@ def prettypy_report(file_name: str):
             cell_val = ws[xlref(row, col)]
             if 'Current MC' == cell.value or 'MC' == cell.value or \
                 'Revenue' == cell.value or 'FCF' == cell.value or \
-                'OCF' == cell.value or 'R&DE' == cell.value:
+                'OCF' == cell.value or 'R&DE' == cell.value or \
+                'EBITDA' == cell.value:
                 if cell_val.value:
                     cell_val.number_format = '0.00E+00'
             else:
