@@ -3,7 +3,7 @@ import os
 
 import fmpsdk as api
 
-from src.backend.constants import SEC_URL, APIKEY
+from src.constants import SEC_URL, APIKEY
 
 
 

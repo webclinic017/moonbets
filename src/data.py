@@ -1,7 +1,7 @@
 import json
 import os
 
-from src.backend import constants as cnst
+from src import constants as cnst
 
 
 def dump_data_json(data, name):

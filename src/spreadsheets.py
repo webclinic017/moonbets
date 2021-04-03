@@ -5,9 +5,9 @@ from openpyxl import Workbook, load_workbook, worksheet
 from openpyxl.styles import PatternFill, Font, Fill, Color
 from openpyxl.utils import get_column_letter
 
-from src.backend import constants as cnst
-from src.backend import data_calls as dc
-from src.backend import data
+from src import constants as cnst
+from src import data_calls as dc
+from src import data
 
 
 #   returns an list of dictionaries

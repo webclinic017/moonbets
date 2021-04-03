@@ -2,12 +2,12 @@ import asyncio
 
 from PyInquirer import prompt
 
-from src.backend import external_endpoints as ee
-from src.backend import spreadsheets as ss
-from src.backend import constants as cnst
-from src.backend import data_calls as dc
-from src.backend import data
-from src.backend import cli
+from src import external_endpoints as ee
+from src import spreadsheets as ss
+from src import constants as cnst
+from src import data_calls as dc
+from src import data
+from src import cli
 
 
 def main():

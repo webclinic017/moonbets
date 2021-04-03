@@ -1,8 +1,8 @@
 import datetime as dt
 import time
 
-from src.backend import external_endpoints as ee
-from src.backend import constants as cnst
+from src import external_endpoints as ee
+from src import constants as cnst
 
 
 
