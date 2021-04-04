@@ -29,7 +29,9 @@ SEC = 'SEC'
 # Periods
 ANNUAL = 'annual'
 QUARTER = 'quarter'
+COMPARE = 'compare'
 REPORT = 'report'
+
 
 # Other
 NOTES = "Notes"

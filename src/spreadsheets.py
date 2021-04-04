@@ -49,6 +49,7 @@ def create_workbook(name: str):
     wb = Workbook()
     wb.create_sheet(cnst.QUARTER)
     wb.create_sheet(cnst.ANNUAL)
+    wb.create_sheet(cnst.COMPARE)
     wb.remove(wb['Sheet'])
     wb.save(file_name)
     wb.close()
@@ -68,7 +69,7 @@ def autofill_report_xl(data: dict, file_name: str):
         if param[0] == 'Date':
             continue
         ws.cell(column=col_pos, row=1, value=param[0])
-        ws[xlref(0,col_pos-1)].comment = create_comment(param[3])
+        ws[xlref(0, col_pos-1)].comment = create_comment(param[3])
         col_pos += 1
     for row, ticker in enumerate(data):
         for col, param in enumerate(cnst.PROFILE_PARAMS):
@@ -115,7 +116,7 @@ def autofill_xl(data: dict, ticker: str, file_name: str, period: str):
         field = param[1]
         data_dates = sorted_dated_data(data, ticker, sheet_name, field)
         ws.cell(column=1, row=current_row, value=param[0])
-        ws[xlref(current_row-1,0)].comment = create_comment(param[3])
+        ws[xlref(current_row-1, 0)].comment = create_comment(param[3])
         for ref_date in date_list:
             if ref_date in data_dates:
                 ws.cell(column=date_list[ref_date][0], row=current_row, value=data_dates[ref_date])
@@ -226,7 +227,7 @@ def prettypy_report(file_name: str):
             if 'Current MC' == cell.value or 'Market Cap' == cell.value or \
                 'Revenue' == cell.value or 'FCF' == cell.value or \
                 'OCF' == cell.value or 'R&DE' == cell.value or \
-                'EBITDA' == cell.value:
+                    'EBITDA' == cell.value:
                 if cell_val.value:
                     cell_val.number_format = '0.00E+00'
             else:
@@ -258,7 +259,7 @@ def xlref(row, column, zero_indexed=True):
     return get_column_letter(column) + str(row)
 
 
-def gen_xl(data: dict, name_postfix:str):
+def gen_xl(data: dict, name_postfix: str):
     for stonk in data:
         date = data[stonk]['calendar']['date']
         file_name = date + '_' + stonk
@@ -279,3 +280,4 @@ def gen_xl_single(data):
         for period in [cnst.ANNUAL, cnst.QUARTER]:
             autofill_xl(data, stonk, file_name, period)
             prettypy(file_name, period)
+        # compare_company(stonk)
