@@ -68,6 +68,7 @@ def autofill_report_xl(data: dict, file_name: str):
         if param[0] == 'Date':
             continue
         ws.cell(column=col_pos, row=1, value=param[0])
+        ws[xlref(0,col_pos-1)].comment = create_comment(param[3])
         col_pos += 1
     for row, ticker in enumerate(data):
         for col, param in enumerate(cnst.PROFILE_PARAMS):
@@ -114,7 +115,6 @@ def autofill_xl(data: dict, ticker: str, file_name: str, period: str):
         field = param[1]
         data_dates = sorted_dated_data(data, ticker, sheet_name, field)
         ws.cell(column=1, row=current_row, value=param[0])
-        #added
         ws[xlref(current_row-1,0)].comment = create_comment(param[3])
         for ref_date in date_list:
             if ref_date in data_dates:
