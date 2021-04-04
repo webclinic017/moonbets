@@ -3,6 +3,7 @@ import logging
 
 from openpyxl import Workbook, load_workbook, worksheet
 from openpyxl.styles import PatternFill, Font, Fill, Color
+from openpyxl.comments import Comment
 from openpyxl.utils import get_column_letter
 
 from src import constants as cnst
@@ -113,6 +114,8 @@ def autofill_xl(data: dict, ticker: str, file_name: str, period: str):
         field = param[1]
         data_dates = sorted_dated_data(data, ticker, sheet_name, field)
         ws.cell(column=1, row=current_row, value=param[0])
+        #added
+        ws[xlref(current_row-1,0)].comment = create_comment(param[3])
         for ref_date in date_list:
             if ref_date in data_dates:
                 ws.cell(column=date_list[ref_date][0], row=current_row, value=data_dates[ref_date])
@@ -236,6 +239,10 @@ def prettypy_report(file_name: str):
             break
     wb.save(path)
     wb.close()
+
+
+def create_comment(comment):
+    return Comment(text=comment, author='Me', height=300, width=300)
 
 
 def columns_best_fit(ws: worksheet.worksheet.Worksheet):
