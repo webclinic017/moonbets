@@ -1,7 +1,11 @@
 import asyncio
+import sys
+import os
 
 from PyInquirer import prompt
 
+#hack for pipenv fix and no module error
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from src import external_endpoints as ee
 from src import spreadsheets as ss
 from src import constants as cnst

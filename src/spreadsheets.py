@@ -185,13 +185,13 @@ def prettypy(file_name: str, period: str):
     wb = load_workbook(path)
     ws = wb[period]
     columns_best_fit(ws)
-    for row in range(0, 30):
+    for row in range(0, 32):
         cell = ws[xlref(row, 0)]
         cell.font = cnst.STYLE_PARAM
     for col in range(1, 60):
         cell = ws[xlref(8, col)]
         cell.font = cnst.STYLE_PARAM
-    for row in range(8, 29):
+    for row in range(8, 32):
         param_cell = ws[xlref(row, 0)]
         for col in range(1, 60):
             current_cell = ws[xlref(row, col)]
@@ -199,7 +199,7 @@ def prettypy(file_name: str, period: str):
             style = color_up(current_cell.value, next_cell.value)
             if style:
                 current_cell.fill = style
-            if 'MC' == param_cell.value or 'Revenue' == param_cell.value or \
+            if 'Market Cap' == param_cell.value or 'Revenue' == param_cell.value or \
                     'FCF' == param_cell.value or 'OCF' == param_cell.value or \
                     'R&DE' == param_cell.value or 'EBITDA' == param_cell.value:
                 current_cell.number_format = '0.00E+00'
@@ -215,12 +215,12 @@ def prettypy_report(file_name: str):
     wb = load_workbook(path)
     ws = wb[file_name]
     columns_best_fit(ws)
-    for col in range(0, 30):
+    for col in range(0, 32):
         cell = ws[xlref(0, col)]
         cell.font = cnst.STYLE_PARAM
         for row in range(1, 100):
             cell_val = ws[xlref(row, col)]
-            if 'Current MC' == cell.value or 'MC' == cell.value or \
+            if 'Current MC' == cell.value or 'Market Cap' == cell.value or \
                 'Revenue' == cell.value or 'FCF' == cell.value or \
                 'OCF' == cell.value or 'R&DE' == cell.value or \
                 'EBITDA' == cell.value:

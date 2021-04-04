@@ -6,11 +6,6 @@ import fmpsdk as api
 from src.constants import SEC_URL, APIKEY
 
 
-
-#   Date should be in YYYY:MM:DD
-#   only three months maximum if range == given
-
-
 def get_earning_calendar(from_date: str = None, to_date: str = None):
     try:
         raw_data = api.earning_calendar(APIKEY,
