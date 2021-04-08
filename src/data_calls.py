@@ -69,3 +69,30 @@ def technicals(profiles):
             all_data[stonk][cnst.RATIOS.format(period)] = r
             time.sleep(0.5)
     return all_data
+
+
+def compare_industry(data: dict,
+                     upper_mc: float = None,
+                     lower_mc: float = None,
+                    ):
+    key = list(data.keys())[0]
+    industry = data[key]['profile'][0]['industry']
+    sector = data[key]['profile'][0]['sector']
+    cmpl_data = {}
+    companies = ee.get_industry(industry, sector, upper_mc, lower_mc)
+    for stonk in companies:
+        ticker = stonk['symbol']
+        if '.' not in ticker:
+            cmpl_data[ticker] = {}
+            cmpl_data[ticker][cnst.COMPANYPROFILE] = stonk
+            cf = ee.get_cash_flow_statment(ticker, cnst.ANNUAL, 2)
+            cmpl_data[ticker][cnst.CASHFLOW.format(cnst.ANNUAL)] = cf
+            incs = ee.get_income_statment(ticker, cnst.ANNUAL, 2)
+            cmpl_data[ticker][cnst.INCOMESTATEMENT.format(cnst.ANNUAL)] = incs
+            km = ee.get_key_metrics(ticker, cnst.ANNUAL, 2)
+            cmpl_data[ticker][cnst.KEYMETRICS.format(cnst.ANNUAL)] = km
+            r = ee.get_ratios(ticker, cnst.ANNUAL, 2)
+            cmpl_data[ticker][cnst.RATIOS.format(cnst.ANNUAL)] = r
+            time.sleep(0.5)
+    return cmpl_data
+

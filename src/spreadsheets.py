@@ -89,6 +89,37 @@ def autofill_report_xl(data: dict, file_name: str):
     wb.close()
 
 
+def autofill_compare_xl(data: dict, file_name: str):
+    path = cnst.DATA_PATH + file_name + '.xlsx'
+    wb = load_workbook(path)
+    ws = wb[cnst.COMPARE]
+    col_pos = 1
+    for col, param in enumerate(cnst.COMPARE_PROFILE_PARAMS):
+        ws.cell(column=col+1, row=1, value=param[0])
+        col_pos += 1
+    for param in cnst.CORE_PARAMS:
+        if param[0] == 'Date':
+            continue
+        ws.cell(column=col_pos, row=1, value=param[0])
+        ws[xlref(0, col_pos-1)].comment = create_comment(param[3])
+        col_pos += 1
+    for row, ticker in enumerate(data):
+        for col, param in enumerate(cnst.COMPARE_PROFILE_PARAMS):
+            col_pos = col + 1
+            field_val = data[ticker]['profile'][param[1]]
+            ws.cell(column=col_pos, row=row+2, value=field_val)
+        for col, param in enumerate(cnst.CORE_PARAMS):
+            if param[0] == 'Date':
+                continue
+            col_pos += 1
+            datasheet = param[2] + '_' + cnst.ANNUAL
+            if data[ticker][datasheet]:
+                field_val = data[ticker][datasheet][0][param[1]]
+                ws.cell(column=col_pos, row=row+2, value=field_val)
+    wb.save(path)
+    wb.close()
+
+
 #   fills xl file with data
 def autofill_xl(data: dict, ticker: str, file_name: str, period: str):
     path = cnst.DATA_PATH + file_name + '.xlsx'
@@ -210,6 +241,8 @@ def prettypy(file_name: str, period: str):
             else:
                 current_cell.number_format = '#0.000'
             current_cell.alignment = cnst.STYLE_ALIGN
+    cell_freeze = ws['B10']
+    ws.freeze_panes = cell_freeze
     wb.save(path)
     wb.close()
 
@@ -233,11 +266,49 @@ def prettypy_report(file_name: str):
             else:
                 if cell_val.value:
                     cell_val.number_format = '#0.000'
+            cell_val.alignment = cnst.STYLE_ALIGN
     for row in range(1, 100):
         cell = ws[xlref(row, 0)]
         cell.font = cnst.STYLE_PARAM
         if not cell.value:
             break
+    cell_freeze = ws['B2']
+    ws.freeze_panes = cell_freeze
+    wb.save(path)
+    wb.close()
+
+
+def prettypy_compare(ticker: str):
+    path = cnst.DATA_PATH + ticker + '.xlsx'
+    wb = load_workbook(path)
+    ws = wb[cnst.COMPARE]
+    columns_best_fit(ws)
+    for col in range(27):
+        cell = ws[xlref(0, col)]
+        cell.font = cnst.STYLE_PARAM
+        for row in range(1, 200):
+            cell_val = ws[xlref(row, col)]
+            if 'Current MC' == cell.value or 'Market Cap' == cell.value or \
+                'Revenue' == cell.value or 'FCF' == cell.value or \
+                'OCF' == cell.value or 'R&DE' == cell.value or \
+                    'EBITDA' == cell.value:
+                if cell_val.value:
+                    cell_val.number_format = '0.00E+00'
+            else:
+                if cell_val.value:
+                    cell_val.number_format = '#0.000'
+    for row in range(1, 100):
+        cell = ws[xlref(row, 0)]
+        cell.font = cnst.STYLE_PARAM
+        ws.freeze_panes = cell
+        if cell.value == ticker:
+            color = Color(rgb='A3D2CA')
+            style = PatternFill(fgColor=color, fill_type='solid')
+            for col in range(27):
+                main_stonk = ws[xlref(row, col)]
+                main_stonk.fill = style
+    cell_freeze = ws['B2']
+    ws.freeze_panes = cell_freeze
     wb.save(path)
     wb.close()
 
@@ -273,11 +344,13 @@ def gen_xl(data: dict, name_postfix: str):
     prettypy_report(report_name)
 
 
-def gen_xl_single(data):
-    for stonk in data:
-        file_name = stonk
-        create_workbook(file_name)
-        for period in [cnst.ANNUAL, cnst.QUARTER]:
-            autofill_xl(data, stonk, file_name, period)
-            prettypy(file_name, period)
-        # compare_company(stonk)
+def gen_xl_single(core_data: dict, compare_data: dict = None):
+    stonk = list(core_data.keys())[0]
+    file_name = stonk
+    create_workbook(file_name)
+    for period in [cnst.ANNUAL, cnst.QUARTER]:
+        autofill_xl(core_data, stonk, file_name, period)
+        prettypy(file_name, period)
+    if compare_data:
+        autofill_compare_xl(compare_data, stonk)
+        prettypy_compare(stonk)

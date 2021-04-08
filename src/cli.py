@@ -4,8 +4,9 @@ main_menu = [
         'name': 'theme',
         'message': 'What do you want to do?',
         'choices': [
-            'Future earnings report',
+            'QUICK Single stonk report',
             'Single stonk report',
+            'Future earnings report',
             'Exit'
         ]
     }
