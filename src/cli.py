@@ -32,3 +32,5 @@ stonk_report = [
         'message': 'Enter ticker',
     }
 ]
+
+

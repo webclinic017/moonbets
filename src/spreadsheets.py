@@ -82,8 +82,9 @@ def autofill_report_xl(data: dict, file_name: str):
             if param[0] == 'Date':
                 continue
             datasheet = param[2] + '_' + cnst.ANNUAL
-            field_val = data[ticker][datasheet][0][param[1]]
-            ws.cell(column=col_pos, row=row+2, value=field_val)
+            if len(data[ticker][datasheet]) > 0:
+                field_val = data[ticker][datasheet][0][param[1]]
+                ws.cell(column=col_pos, row=row+2, value=field_val)
             col_pos += 1
     wb.save(path)
     wb.close()
@@ -97,9 +98,7 @@ def autofill_compare_xl(data: dict, file_name: str):
     for col, param in enumerate(cnst.COMPARE_PROFILE_PARAMS):
         ws.cell(column=col+1, row=1, value=param[0])
         col_pos += 1
-    for param in cnst.CORE_PARAMS:
-        if param[0] == 'Date':
-            continue
+    for param in cnst.COMPARE_CORE_PARAMS:
         ws.cell(column=col_pos, row=1, value=param[0])
         ws[xlref(0, col_pos-1)].comment = create_comment(param[3])
         col_pos += 1
@@ -108,12 +107,10 @@ def autofill_compare_xl(data: dict, file_name: str):
             col_pos = col + 1
             field_val = data[ticker]['profile'][param[1]]
             ws.cell(column=col_pos, row=row+2, value=field_val)
-        for col, param in enumerate(cnst.CORE_PARAMS):
-            if param[0] == 'Date':
-                continue
+        for col, param in enumerate(cnst.COMPARE_CORE_PARAMS):
             col_pos += 1
             datasheet = param[2] + '_' + cnst.ANNUAL
-            if data[ticker][datasheet]:
+            if len(data[ticker][datasheet]) > 0:
                 field_val = data[ticker][datasheet][0][param[1]]
                 ws.cell(column=col_pos, row=row+2, value=field_val)
     wb.save(path)
@@ -307,7 +304,7 @@ def prettypy_compare(ticker: str):
             for col in range(27):
                 main_stonk = ws[xlref(row, col)]
                 main_stonk.fill = style
-    cell_freeze = ws['B2']
+    cell_freeze = ws['D2']
     ws.freeze_panes = cell_freeze
     wb.save(path)
     wb.close()
@@ -348,9 +345,12 @@ def gen_xl_single(core_data: dict, compare_data: dict = None):
     stonk = list(core_data.keys())[0]
     file_name = stonk
     create_workbook(file_name)
-    for period in [cnst.ANNUAL, cnst.QUARTER]:
-        autofill_xl(core_data, stonk, file_name, period)
-        prettypy(file_name, period)
-    if compare_data:
-        autofill_compare_xl(compare_data, stonk)
-        prettypy_compare(stonk)
+    try:
+        for period in [cnst.ANNUAL, cnst.QUARTER]:
+            autofill_xl(core_data, stonk, file_name, period)
+            prettypy(file_name, period)
+        if compare_data:
+            autofill_compare_xl(compare_data, stonk)
+            prettypy_compare(stonk)
+    except:
+        print("could not populate data")

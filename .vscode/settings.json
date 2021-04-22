@@ -2,7 +2,6 @@
     "python.pipenvPath": "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz",
     "python.envFile": "${workspaceFolder}/.env",
     "python.pythonPath": "/home/mooncalf/.local/share/virtualenvs/moonbets-vCkqAfsz/bin/python",
-    "python.analysis.autoSearchPaths": false,
     "python.autoComplete.extraPaths": [
         "${workspaceFolder}",
         "${workspaceFolder}/tests",

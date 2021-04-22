@@ -85,8 +85,6 @@ def compare_industry(data: dict,
         if '.' not in ticker:
             cmpl_data[ticker] = {}
             cmpl_data[ticker][cnst.COMPANYPROFILE] = stonk
-            cf = ee.get_cash_flow_statment(ticker, cnst.ANNUAL, 2)
-            cmpl_data[ticker][cnst.CASHFLOW.format(cnst.ANNUAL)] = cf
             incs = ee.get_income_statment(ticker, cnst.ANNUAL, 2)
             cmpl_data[ticker][cnst.INCOMESTATEMENT.format(cnst.ANNUAL)] = incs
             km = ee.get_key_metrics(ticker, cnst.ANNUAL, 2)

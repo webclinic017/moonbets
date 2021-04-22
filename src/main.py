@@ -29,6 +29,8 @@ def main():
             profile = dc.cleaning_profiles(singple_profile, False)
             all_data = dc.technicals(profile)
             compare_data = dc.compare_industry(all_data)
+            # all_data = data.dump_data_json(all_data, 'all_data')
+            # compare_data = data.dump_data_json(compare_data, 'compare_data')
             # all_data = data.load_data('all_data')
             # compare_data = data.load_data('compare_data')
             ss.gen_xl_single(all_data, compare_data)
