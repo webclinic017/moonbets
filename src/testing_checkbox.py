@@ -1,48 +1,19 @@
-from PyInquirer import Separator
+"""
+* Checkbox question example
+* run example by typing `python example/checkbox.py` in your console
+"""
+from pprint import pprint
 
-main_menu = [
-    {
-        'type': 'list',
-        'name': 'theme',
-        'message': 'What do you want to do?',
-        'choices': [
-            'QUICK Single stonk report',
-            'Single stonk report',
-            'Future earnings report',
-            'Exit'
-        ]
-    }
-]
+from PyInquirer import prompt, Separator
 
-report_dates = [
-    {
-        'type': 'input',
-        'name': 'business_days',
-        'message': 'Enter business days',
-    },
-    {
-        'type': 'input',
-        'name': 'days_from_today',
-        'message': 'Enter days from current date',
-    }
-]
-
-stonk_report = [
-    {
-        'type': 'input',
-        'name': 'ticker',
-        'message': 'Enter ticker',
-    }
-]
-
-
-screener_options = [
+questions = [
     {
         'type': 'checkbox',
-        'message': 'Select options for filter',
+        'qmark': '😃',
+        'message': 'Select toppings',
         'name': 'toppings',
         'choices': [ 
-            Separator('Cap Size'),
+            Separator('= The Meats ='),
             {
                 'name': 'Ham'
             },
@@ -84,7 +55,11 @@ screener_options = [
             {
                 'name': 'Extra cheese'
             }
-        ]
+        ],
+        'validate': lambda answer: 'You must choose at least one topping.' \
+            if len(answer) == 0 else True
     }
 ]
 
+answers = prompt(questions)
+pprint(answers)
