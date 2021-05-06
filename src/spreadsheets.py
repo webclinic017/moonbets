@@ -34,7 +34,36 @@ def get_specific_value(data: dict,
     return data_sheet[0][field]
 
 
-#   name should include ticker and date of earnings
+def ops_int_expense_compare(data: dict,
+                            ticker: str):
+    result = 0
+    try:
+        operation_income = data[ticker]['incomestatement_annual'][0]['operatingIncome']
+        interest_expense = data[ticker]['incomestatement_annual'][0]['interestExpense']
+        result = operation_income/interest_expense
+    except:
+        print("Issue finding operations, interest expense values")
+    finally:
+        return result
+
+
+def ops_int_expense_prettify(value: int):
+    style = ''
+    if value < 0:
+        color = Color(rgb='F60800')
+        style = PatternFill(fgColor=color, fill_type='solid')
+    if value >= 0:
+        color = Color(rgb='FBE2E1')
+        style = PatternFill(fgColor=color, fill_type='solid')
+    if value >= 2:
+        color = Color(rgb='E2EFCD')
+        style = PatternFill(fgColor=color, fill_type='solid')
+    if value >= 5: 
+        color = Color(rgb='C8FBB8')
+        style = PatternFill(fgColor=color, fill_type='solid')
+    return style
+    
+
 def create_all_workbook(name: str):
     file_name = cnst.DATA_PATH + name + '.xlsx'
     wb = Workbook()
@@ -275,7 +304,7 @@ def prettypy_report(file_name: str):
     wb.close()
 
 
-def prettypy_compare(ticker: str):
+def prettypy_compare(compare_data: dict, ticker: str):
     path = cnst.DATA_PATH + ticker + '.xlsx'
     wb = load_workbook(path)
     ws = wb[cnst.COMPARE]
@@ -294,16 +323,20 @@ def prettypy_compare(ticker: str):
             else:
                 if cell_val.value:
                     cell_val.number_format = '#0.000'
-    for row in range(1, 100):
+    for row in range(1, 200):
+        if row > len(compare_data):
+            break
         cell = ws[xlref(row, 0)]
         cell.font = cnst.STYLE_PARAM
-        ws.freeze_panes = cell
         if cell.value == ticker:
             color = Color(rgb='A3D2CA')
             style = PatternFill(fgColor=color, fill_type='solid')
             for col in range(27):
                 main_stonk = ws[xlref(row, col)]
                 main_stonk.fill = style
+        ops_int_value = ops_int_expense_compare(compare_data, cell.value)
+        ops_int_style = ops_int_expense_prettify(ops_int_value)
+        cell.fill = ops_int_style        
     cell_freeze = ws['D2']
     ws.freeze_panes = cell_freeze
     wb.save(path)
@@ -351,6 +384,6 @@ def gen_xl_single(core_data: dict, compare_data: dict = None):
             prettypy(file_name, period)
         if compare_data:
             autofill_compare_xl(compare_data, stonk)
-            prettypy_compare(stonk)
+            prettypy_compare(compare_data, stonk)
     except:
         print("could not populate data")
