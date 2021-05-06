@@ -38,8 +38,8 @@ def ops_int_expense_compare(data: dict,
                             ticker: str):
     result = 0
     try:
-        operation_income = data[ticker]['incomestatement_annual'][0]['operatingIncome']
-        interest_expense = data[ticker]['incomestatement_annual'][0]['interestExpense']
+        operation_income = data[ticker]['incomestatement_quarter'][0]['operatingIncome']
+        interest_expense = data[ticker]['incomestatement_quarter'][0]['interestExpense']
         result = operation_income/interest_expense
     except:
         print("Issue finding operations, interest expense values")
@@ -52,14 +52,17 @@ def ops_int_expense_prettify(value: int):
     if value < 0:
         color = Color(rgb='F60800')
         style = PatternFill(fgColor=color, fill_type='solid')
-    if value >= 0:
+    if value > 0:
         color = Color(rgb='FBE2E1')
         style = PatternFill(fgColor=color, fill_type='solid')
     if value >= 2:
         color = Color(rgb='E2EFCD')
         style = PatternFill(fgColor=color, fill_type='solid')
     if value >= 5: 
-        color = Color(rgb='C8FBB8')
+        color = Color(rgb='3CFD00')
+        style = PatternFill(fgColor=color, fill_type='solid')
+    if value == 0:
+        color = Color(rgb='9A9A9A')
         style = PatternFill(fgColor=color, fill_type='solid')
     return style
     
@@ -138,7 +141,7 @@ def autofill_compare_xl(data: dict, file_name: str):
             ws.cell(column=col_pos, row=row+2, value=field_val)
         for col, param in enumerate(cnst.COMPARE_CORE_PARAMS):
             col_pos += 1
-            datasheet = param[2] + '_' + cnst.ANNUAL
+            datasheet = param[2] + '_' + cnst.QUARTER
             if len(data[ticker][datasheet]) > 0:
                 field_val = data[ticker][datasheet][0][param[1]]
                 ws.cell(column=col_pos, row=row+2, value=field_val)

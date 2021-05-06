@@ -85,12 +85,12 @@ def compare_industry(data: dict,
         if '.' not in ticker:
             cmpl_data[ticker] = {}
             cmpl_data[ticker][cnst.COMPANYPROFILE] = stonk
-            incs = ee.get_income_statment(ticker, cnst.ANNUAL, 2)
-            cmpl_data[ticker][cnst.INCOMESTATEMENT.format(cnst.ANNUAL)] = incs
-            km = ee.get_key_metrics(ticker, cnst.ANNUAL, 2)
-            cmpl_data[ticker][cnst.KEYMETRICS.format(cnst.ANNUAL)] = km
-            r = ee.get_ratios(ticker, cnst.ANNUAL, 2)
-            cmpl_data[ticker][cnst.RATIOS.format(cnst.ANNUAL)] = r
+            incs = ee.get_income_statment(ticker, cnst.QUARTER, 2)
+            cmpl_data[ticker][cnst.INCOMESTATEMENT.format(cnst.QUARTER)] = incs
+            km = ee.get_key_metrics(ticker, cnst.QUARTER, 2)
+            cmpl_data[ticker][cnst.KEYMETRICS.format(cnst.QUARTER)] = km
+            r = ee.get_ratios(ticker, cnst.QUARTER, 2)
+            cmpl_data[ticker][cnst.RATIOS.format(cnst.QUARTER)] = r
             time.sleep(0.5)
     return cmpl_data
 
