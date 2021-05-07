@@ -11,6 +11,9 @@ DATA_PATH = BASE_PATH + '/data/'
 # APIKEY
 load_dotenv()
 APIKEY = os.environ.get('APIKEY')
+TREASURY_RATE = os.environ.get('TREASURYRATE')
+AVG_RATE_OF_RETURNS = os.environ.get('AVERAGERATERETURNS')
+PERPETUAL_GROWTH = os.environ.get('GLOBALECONGROWTH')
 
 
 # Other URLS

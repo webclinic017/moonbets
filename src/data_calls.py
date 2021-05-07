@@ -67,6 +67,8 @@ def technicals(profiles):
             all_data[stonk][cnst.KEYMETRICS.format(period)] = km
             r = ee.get_ratios(stonk, period)
             all_data[stonk][cnst.RATIOS.format(period)] = r
+            bs = ee.get_balance_sheet_statement(stonk, period)
+            all_data[stonk][cnst.BALANCESHEET.format(period)] = bs
             time.sleep(0.5)
     return all_data
 
