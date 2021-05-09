@@ -6,7 +6,7 @@ from src import data_calls as dc
 from src import data
 
 
-def FCF_dataset(data: dict, ticker: str, period: str):
+def calculate_fcf_dataset(data: dict, ticker: str, period: str):
     """
         Function produces the FCF. It returns data dict with FCF.
         It could return a maximum of 5 data sets
@@ -18,9 +18,9 @@ def FCF_dataset(data: dict, ticker: str, period: str):
     # net profit margin
     ratio_sheet = data[ticker][cnst.RATIOS.format(period)]
 
-    FCF_growth_data = growth_rate(fcf_sheet, 'freeCashFlow')
-    revenue_growth_data = growth_rate(incstm_sheet, 'revenue')
-    netprofitmargin_growth_data = growth_rate(ratio_sheet, 'netProfitMargin')
+    FCF_growth_data = calculate_growth_rate(fcf_sheet, 'freeCashFlow')
+    revenue_growth_data = calculate_growth_rate(incstm_sheet, 'revenue')
+    netprofitmargin_growth_data = calculate_growth_rate(ratio_sheet, 'netProfitMargin')
 
     revenue = []
     current_revenue = revenue_growth_data[1][0]
@@ -38,7 +38,7 @@ def FCF_dataset(data: dict, ticker: str, period: str):
     return FCF_predict
 
 
-def growth_rate(data: list, data_key: str):
+def calculate_growth_rate(data: list, data_key: str):
     """
         It takes a dict and a data key
         grabs lowest growth rate, grabbing 2 lowest closest to the mean. 
@@ -94,14 +94,24 @@ def difference_calculator(current: int, prev: int):
     return result
 
 
-def discount_factor(WACC_value: int, number_factors: int):
+def calculate_discount_factor(WACC_value: int, number_factors: int):
     """
     docstring
     """
-    pass
+    discount_factor = []
+    for factor in range(1, number_factors+1):
+        temp = (1+(WACC_value/100))
+        disc_temp = 0
+        for iteration in range(1, factor+1):
+            if iteration == 1:    
+                disc_temp = temp
+            else:
+                disc_temp = disc_temp * temp   
+        discount_factor.append(disc_temp)
+    return discount_factor
 
 
-def WACC_value(data: dict, ticker: str, period: str):
+def calculate_wacc_value(data: dict, ticker: str, period: str):
     """
         Funtion returns WACC value as an integer
     """
@@ -112,25 +122,31 @@ def WACC_value(data: dict, ticker: str, period: str):
     # marketcap
     keymtcs = data[ticker][cnst.KEYMETRICS.format(period)][0]
     # beta 
-    profile = data[ticker][cnst.PROFILE_PARAMS.format(period)][0]
+    profile = data[ticker][cnst.COMPANYPROFILE][0]
 
-    int_expense = ''
-    inc_b4_tax = ''
+    int_expense = incstm['interestExpense']
+    inc_b4_tax = incstm['incomeBeforeTax']
+    inc_tax_expense = incstm['incomeTaxExpense']
+    ttl_debt = bsheet['totalDebt']
+    mk_cap = keymtcs['marketCap']
+    beta = profile['beta']
+
+    rate = (1 - (difference_calculator(inc_b4_tax, inc_tax_expense)))
+    r_debt = difference_calculator(ttl_debt, int_expense)
+    w_debt = ttl_debt/(ttl_debt + mk_cap)
+    w_equity = mk_cap/(ttl_debt + mk_cap)
+    r_equity = float(cnst.TREASURY_RATE) + (beta*(float(cnst.AVG_RATE_OF_RETURNS)-float(cnst.TREASURY_RATE)))
+
+    wacc = (w_debt*r_debt*rate) + (w_equity*r_equity)
+    return wacc
 
 
-    rate = 
-    r_debt = ''
-    w_debt = ''
-    w_equity = ''
-    r_equity = ''
-
-    pass
-
-
-def terminal_value(data: dict, ticker: str, period: str):
+def calculate_fcf_terminal_value(data: dict, ticker: str, period: str, disc_factor: list):
     """
-    docstring
+        calculate terminal value for FCF, discount factor, and PV of future cash flow
     """
+    fcf_current_yr = data[ticker][cnst.CASHFLOW.format(period)][0]['free']
+
     pass
 
 
