@@ -154,11 +154,17 @@ def calculate_fcf_terminal_value(data: dict, ticker: str, period: str):
     return terminal_value
 
 
-def PV_future_cashflow(fcf_data: dict, terminal_value: float, discount_factor_value: float):
+def calculate_pv_future_cashflow(fcf_data: list, fcf_terminal_value: float, discount_factor: list):
     """
-    docstring
+        takes in fcf prediction data, terminal value for fcf, and discount factors
     """
-    pass
+    fcf_data.append(fcf_terminal_value)
+    discount_factor.append(discount_factor[-1])
+    future_cashflow = []
+    for index in range(0, len(fcf_data)):
+        future_cashflow.append(fcf_data[index] / discount_factor[index])
+    return future_cashflow
+
 
 
 def todays_stock_value(PV_value: dict):
