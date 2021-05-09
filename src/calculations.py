@@ -1,4 +1,3 @@
-from dateutil.relativedelta import relativedelta
 import datetime
 
 from src import constants as cnst
@@ -167,15 +166,23 @@ def calculate_pv_future_cashflow(fcf_data: list, fcf_terminal_value: float, disc
 
 
 
-def todays_stock_value(PV_value: dict):
+def calculate_todays_stock_value(pv_data: dict):
     """
-    docstring
+        add array of pv future cash data and returns the value
     """
-    pass
+    result = 0
+    for value in pv_data:
+        result += value
+    return result
 
 
-def fair_value_equity(data: dict, ticker: str, todays_value: int):
+def calculate_fair_value_equity(data: dict, ticker: str, period: str, todays_value: int):
     """
-    docstring
+        calculates fair value
     """
-    pass
+    # shares out
+    sharesout = data[ticker][cnst.INCOMESTATEMENT.format(period)][0]['weightedAverageShsOut']
+    instrinsic_value = todays_value / sharesout
+    return instrinsic_value
+
+
