@@ -94,13 +94,13 @@ def difference_calculator(current: int, prev: int):
     return result
 
 
-def calculate_discount_factor(WACC_value: int, number_factors: int):
+def calculate_discount_factor(wacc_value: int, number_factors: int):
     """
     docstring
     """
     discount_factor = []
     for factor in range(1, number_factors+1):
-        temp = (1+(WACC_value/100))
+        temp = (1+(wacc_value/100))
         disc_temp = 0
         for iteration in range(1, factor+1):
             if iteration == 1:    
@@ -141,16 +141,20 @@ def calculate_wacc_value(data: dict, ticker: str, period: str):
     return wacc
 
 
-def calculate_fcf_terminal_value(data: dict, ticker: str, period: str, disc_factor: list):
+def calculate_fcf_terminal_value(data: dict, ticker: str, period: str):
     """
         calculate terminal value for FCF, discount factor, and PV of future cash flow
+        retuns float value
     """
-    fcf_current_yr = data[ticker][cnst.CASHFLOW.format(period)][0]['free']
+    fcf_current_yr = data[ticker][cnst.CASHFLOW.format(period)][0]['freeCashFlow']
+    perpetual_growth = float(cnst.PERPETUAL_GROWTH)/100
+    required_return = calculate_wacc_value(data,ticker,period)/100
 
-    pass
+    terminal_value = (fcf_current_yr * (1+perpetual_growth)) / (required_return - perpetual_growth)
+    return terminal_value
 
 
-def PV_future_cashflow(FCF_data: dict, discount_factor_value: int):
+def PV_future_cashflow(fcf_data: dict, terminal_value: float, discount_factor_value: float):
     """
     docstring
     """

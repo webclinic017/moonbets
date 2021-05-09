@@ -42,3 +42,8 @@ def test_calculatediscount_factor():
     assert len(discount_fact) == 4
     discount_fact = calculate_discount_factor(wacc_result, 10)
     assert len(discount_fact) == 10
+
+
+def test_calculate_fcf_terminal_value():
+    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual')
+    assert terminal_value_result == 3585855613458.678
