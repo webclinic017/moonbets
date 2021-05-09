@@ -72,10 +72,12 @@ def calculate_growth_rate(data: list, data_key: str):
     if lowest < 0:
         positve_lowest = 0
         for gr_per_year in lowest_list:
-            if positve_lowest == 0:
-                positve_lowest = gr_per_year
-            if gr_per_year > 0 and gr_per_year < positve_lowest:
-                positve_lowest = gr_per_year
+            if gr_per_year > 0: 
+                temp = gr_per_year
+                if gr_per_year < positve_lowest and positve_lowest != 0:
+                    positve_lowest = temp
+                elif positve_lowest == 0:
+                    positve_lowest = temp
         if positve_lowest > 0:
             lowest = positve_lowest
         else:
@@ -184,5 +186,4 @@ def calculate_fair_value_equity(data: dict, ticker: str, period: str, todays_val
     sharesout = data[ticker][cnst.INCOMESTATEMENT.format(period)][0]['weightedAverageShsOut']
     instrinsic_value = todays_value / sharesout
     return instrinsic_value
-
-
+    
