@@ -47,8 +47,9 @@ def test_calculate_discount_factor():
 
 
 def test_calculate_fcf_terminal_value():
-    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual')
-    assert terminal_value_result == 3585855613458.678
+    fcf_result = calculate_fcf_dataset(all_data, 'BABA', 'annual')
+    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual',fcf_result[-1])
+    assert terminal_value_result == 12522629826116.812
 
 
 def test_calculate_pv_future_cashflow():
@@ -58,8 +59,8 @@ def test_calculate_pv_future_cashflow():
     wacc_result = calculate_wacc_value(all_data, 'BABA', 'annual')
     discount_fact = calculate_discount_factor(wacc_result, 4)
     assert len(discount_fact) == 4
-    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual')
-    assert terminal_value_result == 3585855613458.678
+    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual', fcf_result[-1])
+    assert terminal_value_result == 12522629826116.812
     future_cashflow = calculate_pv_future_cashflow(fcf_result,
                                                    terminal_value_result,
                                                    discount_fact)
@@ -68,13 +69,11 @@ def test_calculate_pv_future_cashflow():
 
 def test_todays_stock_value():
     fcf_result = calculate_fcf_dataset(all_data, 'BABA', 'annual')
-    for value in fcf_result:
-        assert value > 135221000000
     wacc_result = calculate_wacc_value(all_data, 'BABA', 'annual')
     discount_fact = calculate_discount_factor(wacc_result, 4)
     assert len(discount_fact) == 4
-    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual')
-    assert terminal_value_result == 3585855613458.678
+    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual', fcf_result[-1])
+    assert terminal_value_result == 12522629826116.812
     future_cashflow = calculate_pv_future_cashflow(fcf_result,
                                                    terminal_value_result,
                                                    discount_fact)
@@ -87,13 +86,11 @@ def test_todays_stock_value():
 
 def test_fair_value_equity():
     fcf_result = calculate_fcf_dataset(all_data, 'BABA', 'annual')
-    for value in fcf_result:
-        assert value > 135221000000
     wacc_result = calculate_wacc_value(all_data, 'BABA', 'annual')
     discount_fact = calculate_discount_factor(wacc_result, 4)
     assert len(discount_fact) == 4
-    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual')
-    assert terminal_value_result == 3585855613458.678
+    terminal_value_result = calculate_fcf_terminal_value(all_data, 'BABA', 'annual', fcf_result[-1])
+    # assert terminal_value_result == 12522629826116.812
     future_cashflow = calculate_pv_future_cashflow(fcf_result,
                                                    terminal_value_result,
                                                    discount_fact)

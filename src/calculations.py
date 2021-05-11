@@ -17,19 +17,21 @@ def calculate_fcf_dataset(data: dict, ticker: str, period: str):
     # net profit margin
     ratio_sheet = data[ticker][cnst.RATIOS.format(period)]
 
-    FCF_growth_data = calculate_growth_rate(fcf_sheet, 'freeCashFlow')
-    revenue_growth_data = calculate_growth_rate(incstm_sheet, 'revenue')
-    netprofitmargin_growth_data = calculate_growth_rate(ratio_sheet, 'netProfitMargin')
+    FCF_growth_data = calculate_growth_rate(fcf_sheet, 'freeCashFlow', period)
+    revenue_growth_data = calculate_growth_rate(incstm_sheet, 'revenue', period)
+    netprofitmargin_growth_data = calculate_lowest_positive_netprofitmargin_value(ratio_sheet,
+                                                                                  'netProfitMargin',
+                                                                                  period)
 
     revenue = []
     current_revenue = revenue_growth_data[1][0]
     for index in range(0, 4):
         current_revenue = current_revenue * (1+revenue_growth_data[0])
-        revenue.append(current_revenue * (1+revenue_growth_data[0]))
+        revenue.append(current_revenue)
 
     net_income = []
     for index in range(0, 4):
-        net_income.append(revenue[index] * netprofitmargin_growth_data[0])
+        net_income.append(revenue[index] * netprofitmargin_growth_data)
 
     FCF_predict = []
     for index in range(0, 4):
@@ -37,7 +39,37 @@ def calculate_fcf_dataset(data: dict, ticker: str, period: str):
     return FCF_predict
 
 
-def calculate_growth_rate(data: list, data_key: str):
+def calculate_lowest_positive_netprofitmargin_value(data: list, data_key: str, period: str):
+    """
+        returns lowest net proft margin value
+    """
+    index = 0
+    data_index = 0
+    temp_data = []
+    lowest = 0
+    temp = 0
+    if period == cnst.ANNUAL:
+        data_index = 6
+    if period == cnst.QUARTER:
+        data_index = 12
+
+    # get data from sheet
+    for time_period in data:
+        if not time_period[data_key] or index >= data_index:
+            break
+        temp_data.append(time_period[data_key])
+        index += 1
+
+    for value in temp_data:
+        if temp == 0 and value > 0:
+            temp = value
+            lowest = temp
+        if temp != 0 and value < temp and value > 0:
+            lowest = temp
+    return lowest
+
+
+def calculate_growth_rate(data: list, data_key: str, period: str):
     """
         It takes a dict and a data key
         grabs lowest growth rate, grabbing 2 lowest closest to the mean. 
@@ -45,14 +77,18 @@ def calculate_growth_rate(data: list, data_key: str):
         dataset(list), set_length
     """
     index = 0
+    data_index = 0
     temp_data = []
     lowest = 0
-    lowest_list = []
-    average = 0
+
+    if period == cnst.ANNUAL:
+        data_index = 6
+    if period == cnst.QUARTER:
+        data_index = 12
 
     # get data from sheet
     for time_period in data:
-        if index == 6:
+        if not time_period[data_key] or index >= data_index:
             break
         temp_data.append(time_period[data_key])
         index += 1
@@ -60,28 +96,10 @@ def calculate_growth_rate(data: list, data_key: str):
     # lowest value
     for range_index in range(0, index-1):
         temp = difference_calculator(temp_data[range_index], temp_data[range_index+1])
-        lowest_list.append(temp)
-        if range_index == 0:
+        if lowest == 0:
             lowest = temp
-        if temp < lowest and range_index != 0:
+        elif temp < lowest:
             lowest = temp
-        average += temp
-    average += average/(index-1)
-
-    # lowest positive in case lowest has a negative rate
-    if lowest < 0:
-        positve_lowest = 0
-        for gr_per_year in lowest_list:
-            if gr_per_year > 0: 
-                temp = gr_per_year
-                if gr_per_year < positve_lowest and positve_lowest != 0:
-                    positve_lowest = temp
-                elif positve_lowest == 0:
-                    positve_lowest = temp
-        if positve_lowest > 0:
-            lowest = positve_lowest
-        else:
-            lowest = average
     return (lowest, temp_data, index)
 
 
@@ -92,22 +110,22 @@ def difference_calculator(current: int, prev: int):
     result = 0
     if current != 0:
         result = (current - prev)/current
-    return result
+    return abs(result)
 
 
 def calculate_discount_factor(wacc_value: int, number_factors: int):
     """
-    docstring
+        takes in the wacc value and the number of factors to multiply
     """
     discount_factor = []
     for factor in range(1, number_factors+1):
         temp = (1+(wacc_value/100))
         disc_temp = 0
         for iteration in range(1, factor+1):
-            if iteration == 1:    
+            if iteration == 1:
                 disc_temp = temp
             else:
-                disc_temp = disc_temp * temp   
+                disc_temp = disc_temp * temp
         discount_factor.append(disc_temp)
     return discount_factor
 
@@ -122,7 +140,7 @@ def calculate_wacc_value(data: dict, ticker: str, period: str):
     bsheet = data[ticker][cnst.BALANCESHEET.format(period)][0]
     # marketcap
     keymtcs = data[ticker][cnst.KEYMETRICS.format(period)][0]
-    # beta 
+    # beta
     profile = data[ticker][cnst.COMPANYPROFILE][0]
 
     int_expense = incstm['interestExpense']
@@ -142,16 +160,14 @@ def calculate_wacc_value(data: dict, ticker: str, period: str):
     return wacc
 
 
-def calculate_fcf_terminal_value(data: dict, ticker: str, period: str):
+def calculate_fcf_terminal_value(wacc_value: float, fcf_prev_year: float):
     """
         calculate terminal value for FCF, discount factor, and PV of future cash flow
         retuns float value
     """
-    fcf_current_yr = data[ticker][cnst.CASHFLOW.format(period)][0]['freeCashFlow']
     perpetual_growth = float(cnst.PERPETUAL_GROWTH)/100
-    required_return = calculate_wacc_value(data,ticker,period)/100
 
-    terminal_value = (fcf_current_yr * (1+perpetual_growth)) / (required_return - perpetual_growth)
+    terminal_value = (fcf_prev_year * (1+perpetual_growth)) / ((wacc_value/100) - perpetual_growth)
     return terminal_value
 
 
@@ -159,13 +175,17 @@ def calculate_pv_future_cashflow(fcf_data: list, fcf_terminal_value: float, disc
     """
         takes in fcf prediction data, terminal value for fcf, and discount factors
     """
-    fcf_data.append(fcf_terminal_value)
-    discount_factor.append(discount_factor[-1])
-    future_cashflow = []
-    for index in range(0, len(fcf_data)):
-        future_cashflow.append(fcf_data[index] / discount_factor[index])
-    return future_cashflow
+    fcf_new = []
+    fcf_new.extend(fcf_data)
+    fcf_new.append(fcf_terminal_value)
 
+    disc_new = []
+    disc_new.extend(discount_factor)
+    disc_new.append(discount_factor[-1])
+    future_cashflow = []
+    for index in range(0, len(fcf_new)):
+        future_cashflow.append(fcf_new[index] / disc_new[index])
+    return future_cashflow
 
 
 def calculate_todays_stock_value(pv_data: dict):
@@ -186,4 +206,3 @@ def calculate_fair_value_equity(data: dict, ticker: str, period: str, todays_val
     sharesout = data[ticker][cnst.INCOMESTATEMENT.format(period)][0]['weightedAverageShsOut']
     instrinsic_value = todays_value / sharesout
     return instrinsic_value
-    

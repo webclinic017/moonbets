@@ -34,8 +34,9 @@ ANNUAL = 'annual'
 QUARTER = 'quarter'
 COMPARE = 'compare'
 REPORT = 'report'
-
-
+FAIRVALUE_ANNUAL = 'DCF Annual:'
+FAIRVALUE_QUARTER = 'DCF Quarter:'
+FAIRVALUE_FMT = 'DCF FMT:'
 # Other
 NOTES = "Notes"
 DESCRIPTION = "Description"

@@ -127,6 +127,7 @@ def autofill_compare_xl(data: dict, file_name: str):
     wb = load_workbook(path)
     ws = wb[cnst.COMPARE]
     col_pos = 1
+    field_val = ''
     for col, param in enumerate(cnst.COMPARE_PROFILE_PARAMS):
         ws.cell(column=col+1, row=1, value=param[0])
         col_pos += 1
@@ -137,7 +138,10 @@ def autofill_compare_xl(data: dict, file_name: str):
     for row, ticker in enumerate(data):
         for col, param in enumerate(cnst.COMPARE_PROFILE_PARAMS):
             col_pos = col + 1
-            field_val = data[ticker]['profile'][param[1]]
+            if 'profile' in data[ticker]:
+                field_val = data[ticker]['profile'][param[1]]
+            else:
+                field_val = 0
             ws.cell(column=col_pos, row=row+2, value=field_val)
         for col, param in enumerate(cnst.COMPARE_CORE_PARAMS):
             col_pos += 1
@@ -180,6 +184,15 @@ def autofill_xl(data: dict, ticker: str, file_name: str, period: str):
         for ref_date in date_list:
             if ref_date in data_dates:
                 ws.cell(column=date_list[ref_date][0], row=current_row, value=data_dates[ref_date])
+    # DCF values
+    dcf_values = dc.get_dcf_company(data, ticker)
+    ws['D1'].value = cnst.FAIRVALUE_ANNUAL
+    ws['D2'].value = cnst.FAIRVALUE_QUARTER
+    ws['D3'].value = cnst.FAIRVALUE_FMT
+    if len(dcf_values) > 1:
+        ws['E1'].value = dcf_values['annual']
+        ws['E2'].value = dcf_values['quarter']
+    ws['E3'].value = get_specific_value(data, ticker, 'profile', 'dcf')
     wb.save(path)
     wb.close()
 
@@ -270,6 +283,10 @@ def prettypy(file_name: str, period: str):
             else:
                 current_cell.number_format = '#0.000'
             current_cell.alignment = cnst.STYLE_ALIGN
+    # DCF values
+    ws['D1'].font = cnst.STYLE_PARAM
+    ws['D2'].font = cnst.STYLE_PARAM
+    ws['D3'].font = cnst.STYLE_PARAM
     cell_freeze = ws['B10']
     ws.freeze_panes = cell_freeze
     wb.save(path)
