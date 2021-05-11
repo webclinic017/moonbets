@@ -100,7 +100,7 @@ def compare_industry(data: dict,
                 cmpl_data[ticker][cnst.KEYMETRICS.format(cnst.QUARTER)] = km
                 r = ee.get_ratios(ticker, cnst.QUARTER)
                 cmpl_data[ticker][cnst.RATIOS.format(cnst.QUARTER)] = r
-                time.sleep(0.51)
+                time.sleep(0.5)
     except:
         print("Issue @ compare_industry")
     finally:
