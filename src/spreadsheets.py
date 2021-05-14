@@ -298,7 +298,7 @@ def prettypy_report(file_name: str):
     wb = load_workbook(path)
     ws = wb[file_name]
     columns_best_fit(ws)
-    for col in range(0, 32):
+    for col in range(0, 34):
         cell = ws[xlref(0, col)]
         cell.font = cnst.STYLE_PARAM
         for row in range(1, 100):
@@ -306,7 +306,8 @@ def prettypy_report(file_name: str):
             if 'Current MC' == cell.value or 'Market Cap' == cell.value or \
                 'Revenue' == cell.value or 'FCF' == cell.value or \
                 'OCF' == cell.value or 'R&DE' == cell.value or \
-                    'EBITDA' == cell.value:
+                'EBITDA' == cell.value or 'Total Assets' == cell.value or \
+                'Total Debt':
                 if cell_val.value:
                     cell_val.number_format = '0.00E+00'
             else:
