@@ -58,14 +58,14 @@ def ops_int_expense_prettify(value: int):
     if value >= 2:
         color = Color(rgb='E2EFCD')
         style = PatternFill(fgColor=color, fill_type='solid')
-    if value >= 5: 
+    if value >= 5:
         color = Color(rgb='3CFD00')
         style = PatternFill(fgColor=color, fill_type='solid')
     if value == 0:
         color = Color(rgb='9A9A9A')
         style = PatternFill(fgColor=color, fill_type='solid')
     return style
-    
+
 
 def create_all_workbook(name: str):
     file_name = cnst.DATA_PATH + name + '.xlsx'
@@ -278,7 +278,8 @@ def prettypy(file_name: str, period: str):
                 current_cell.fill = style
             if 'Market Cap' == param_cell.value or 'Revenue' == param_cell.value or \
                     'FCF' == param_cell.value or 'OCF' == param_cell.value or \
-                    'R&DE' == param_cell.value or 'EBITDA' == param_cell.value:
+                    'R&DE' == param_cell.value or 'EBITDA' == param_cell.value or \
+                    'Total Assets' == cell.value or 'Total Debt' == cell.value:
                 current_cell.number_format = '0.00E+00'
             else:
                 current_cell.number_format = '#0.000'
@@ -307,7 +308,7 @@ def prettypy_report(file_name: str):
                 'Revenue' == cell.value or 'FCF' == cell.value or \
                 'OCF' == cell.value or 'R&DE' == cell.value or \
                 'EBITDA' == cell.value or 'Total Assets' == cell.value or \
-                'Total Debt':
+                    'Total Debt' == cell.value:
                 if cell_val.value:
                     cell_val.number_format = '0.00E+00'
             else:
@@ -357,7 +358,7 @@ def prettypy_compare(compare_data: dict, ticker: str):
                 main_stonk.fill = style
         ops_int_value = ops_int_expense_compare(compare_data, cell.value)
         ops_int_style = ops_int_expense_prettify(ops_int_value)
-        cell.fill = ops_int_style        
+        cell.fill = ops_int_style
     cell_freeze = ws['D2']
     ws.freeze_panes = cell_freeze
     wb.save(path)
