@@ -262,24 +262,25 @@ def prettypy(file_name: str, period: str):
     wb = load_workbook(path)
     ws = wb[period]
     columns_best_fit(ws)
-    for row in range(0, 32):
+    for row in range(0, 34):
         cell = ws[xlref(row, 0)]
         cell.font = cnst.STYLE_PARAM
     for col in range(1, 60):
         cell = ws[xlref(8, col)]
         cell.font = cnst.STYLE_PARAM
-    for row in range(8, 32):
+    for row in range(8, 34):
         param_cell = ws[xlref(row, 0)]
+        cell_value = param_cell.value
         for col in range(1, 60):
             current_cell = ws[xlref(row, col)]
             next_cell = ws[xlref(row, col+1)]
             style = color_up(current_cell.value, next_cell.value)
             if style:
                 current_cell.fill = style
-            if 'Market Cap' == param_cell.value or 'Revenue' == param_cell.value or \
-                    'FCF' == param_cell.value or 'OCF' == param_cell.value or \
-                    'R&DE' == param_cell.value or 'EBITDA' == param_cell.value or \
-                    'Total Assets' == cell.value or 'Total Debt' == cell.value:
+            if 'Market Cap' == cell_value or 'Revenue' == cell_value or \
+                    'FCF' == cell_value or 'OCF' == cell_value or \
+                    'R&DE' == cell_value or 'EBITDA' == cell_value or \
+                    'Total Assets' == cell_value or 'Total Debt' == cell_value:
                 current_cell.number_format = '0.00E+00'
             else:
                 current_cell.number_format = '#0.000'
@@ -305,9 +306,9 @@ def prettypy_report(file_name: str):
         for row in range(1, 100):
             cell_val = ws[xlref(row, col)]
             if 'Current MC' == cell.value or 'Market Cap' == cell.value or \
-                'Revenue' == cell.value or 'FCF' == cell.value or \
-                'OCF' == cell.value or 'R&DE' == cell.value or \
-                'EBITDA' == cell.value or 'Total Assets' == cell.value or \
+                    'Revenue' == cell.value or 'FCF' == cell.value or \
+                    'OCF' == cell.value or 'R&DE' == cell.value or \
+                    'EBITDA' == cell.value or 'Total Assets' == cell.value or \
                     'Total Debt' == cell.value:
                 if cell_val.value:
                     cell_val.number_format = '0.00E+00'
@@ -336,10 +337,10 @@ def prettypy_compare(compare_data: dict, ticker: str):
         cell.font = cnst.STYLE_PARAM
         for row in range(1, 200):
             cell_val = ws[xlref(row, col)]
-            if 'Current MC' == cell.value or 'Market Cap' == cell.value or \
-                'Revenue' == cell.value or 'FCF' == cell.value or \
-                'OCF' == cell.value or 'R&DE' == cell.value or \
-                    'EBITDA' == cell.value:
+            if 'Current MC' == cell_val.value or 'Market Cap' == cell_val.value or \
+                'Revenue' == cell_val.value or 'FCF' == cell_val.value or \
+                'OCF' == cell_val.value or 'R&DE' == cell_val.value or \
+                    'EBITDA' == cell_val.value:
                 if cell_val.value:
                     cell_val.number_format = '0.00E+00'
             else:
