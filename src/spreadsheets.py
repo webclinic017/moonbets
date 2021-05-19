@@ -185,7 +185,6 @@ def autofill_xl(data: dict, ticker: str, file_name: str, period: str):
             if ref_date in data_dates:
                 ws.cell(column=date_list[ref_date][0], row=current_row, value=data_dates[ref_date])
     # DCF values
-    dcf_values = dc.get_dcf_company(data, ticker)
     ws['D1'].value = cnst.FAIRVALUE_FMT
     ws['E1'].value = get_specific_value(data, ticker, 'profile', 'dcf')
     wb.save(path)
@@ -299,9 +298,9 @@ def prettypy_report(file_name: str):
         for row in range(1, 100):
             cell_val = ws[xlref(row, col)]
             if 'Current MC' == cell.value or 'Market Cap' == cell.value or \
-                    'Revenue' == cell.value or 'FCF' == cell.value or \
-                    'OCF' == cell.value or 'R&DE' == cell.value or \
-                    'EBITDA' == cell.value or 'Total Assets' == cell.value or \
+                'Revenue' == cell.value or 'FCF' == cell.value or \
+                'OCF' == cell.value or 'R&DE' == cell.value or \
+                'EBITDA' == cell.value or 'Total Assets' == cell.value or \
                     'Total Debt' == cell.value:
                 if cell_val.value:
                     cell_val.number_format = '0.00E+00'
@@ -330,10 +329,10 @@ def prettypy_compare(compare_data: dict, ticker: str):
         cell.font = cnst.STYLE_PARAM
         for row in range(1, 200):
             cell_val = ws[xlref(row, col)]
-            if 'Current MC' == cell_val.value or 'Market Cap' == cell_val.value or \
-                'Revenue' == cell_val.value or 'FCF' == cell_val.value or \
-                'OCF' == cell_val.value or 'R&DE' == cell_val.value or \
-                    'EBITDA' == cell_val.value:
+            if 'Current MC' == cell.value or 'Market Cap' == cell.value or \
+                'Revenue' == cell.value or 'FCF' == cell.value or \
+                'OCF' == cell.value or 'R&DE' == cell.value or \
+                    'EBITDA' == cell.value:
                 if cell_val.value:
                     cell_val.number_format = '0.00E+00'
             else:
